@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Keranjang - Teddy Doll</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
+  <!-- Removed auth.js import to avoid conflict -->
+</head>
+<body class="black-text">
+  <script src="userManagement.js"></script>
+  <script>
+    // Cek login
+    if (!isUserLoggedIn()) {
+      alert('Silakan login terlebih dahulu untuk mengakses keranjang.');
+      window.location.href = 'login.html';
+    }
+
+    // Render cart items
+    function renderCart() {
+      const cartItems = getCartItems();
+      const tbody = document.querySelector('.cart-table tbody');
+      tbody.innerHTML = '';
+
+      if (cartItems.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 5;
+        td.textContent = 'Keranjang belanja kosong.';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        document.getElementById('totalPrice').textContent = 'Rp 0';
+        return;
+      }
+
+      let total = 0;
+      cartItems.forEach((item, index) => {
+        const tr = document.createElement('tr');
+
+        const tdName = document.createElement('td');
+        tdName.textContent = item.name;
+        tr.appendChild(tdName);
+
+        const tdPrice = document.createElement('td');
+        tdPrice.textContent = `Rp ${item.price.toLocaleString('id-ID')}`;
+        tr.appendChild(tdPrice);
+
+        const tdQuantity = document.createElement('td');
+
+        // Create minus button
+        const btnMinus = document.createElement('button');
+        btnMinus.textContent = '-';
+        btnMinus.classList.add('btn-quantity');
+        btnMinus.addEventListener('click', () => {
+          if ((item.quantity || 1) > 1) {
+            updateQuantity(index, (item.quantity || 1) - 1);
+          }
+        });
+        tdQuantity.appendChild(btnMinus);
+
+        // Create quantity display
+        const spanQuantity = document.createElement('span');
+        spanQuantity.textContent = item.quantity || 1;
+        spanQuantity.classList.add('quantity-display');
+        spanQuantity.style.margin = '0 8px';
+        tdQuantity.appendChild(spanQuantity);
+
+        // Create plus button
+        const btnPlus = document.createElement('button');
+        btnPlus.textContent = '+';
+        btnPlus.classList.add('btn-quantity');
+        btnPlus.addEventListener('click', () => {
+          updateQuantity(index, (item.quantity || 1) + 1);
+        });
+        tdQuantity.appendChild(btnPlus);
+
+        tr.appendChild(tdQuantity);
+
+        const subtotal = item.price * (item.quantity || 1);
+        total += subtotal;
+        const tdSubtotal = document.createElement('td');
+        tdSubtotal.textContent = `Rp ${subtotal.toLocaleString('id-ID')}`;
+        tr.appendChild(tdSubtotal);
+
+        const tdRemove = document.createElement('td');
+        const btnRemove = document.createElement('button');
+        btnRemove.textContent = 'Hapus';
+        btnRemove.classList.add('btn-remove');
+        btnRemove.addEventListener('click', () => {
+          removeFromCart(index);
+        });
+        tdRemove.appendChild(btnRemove);
+        tr.appendChild(tdRemove);
+
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('totalPrice').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+    }
+
+    // Update quantity of item at index
+    function updateQuantity(index, newQuantity) {
+      let cartItems = getCartItems();
+      if (newQuantity < 1) return;
+      cartItems[index].quantity = newQuantity;
+      localStorage.setItem('cartItems', JSON.stringify(cartItems));
+      renderCart();
+    }
+
+    // Remove item from cart by index
+    function removeFromCart(index) {
+      let cartItems = getCartItems();
+      cartItems.splice(index, 1);
+      localStorage.setItem('cartItems', JSON.stringify(cartItems));
+      renderCart();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCart();
+    });
+  </script>
+</body>
+</html>
+    <!-- Header Section -->
+    <header role="banner">
+      <div class="container header-container">
+          <h1 class="logo">Teddy Doll</h1>
+          <nav role="navigation" aria-label="Navigasi Utama">
+              <ul class="nav-links">
+                  <li><a href="index.html">Halaman Utama</a></li>
+                  <li><a href="about.html">Tentang Toko</a></li>
+                  <li><a href="shop.html">Toko</a></li>
+                  <li><a href="cart.html">Keranjang</a></li>
+                  <li><a href="checkout.html">Pembayaran</a></li>
+                  <li><a href="contact.html">Kontak</a></li>
+                  <li><a href="login.html">Masuk</a></li>
+              </ul>
+          </nav>
+      </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Cart Section -->
+  <section class="container cart-section" role="region" aria-label="Keranjang Belanja">
+      <h2 style="text-align: center; color: #5a3e1b; margin-bottom: 30px; font-weight: 700; font-size: 2rem;">Keranjang Belanja Anda</h2>
+      <table class="cart-table" aria-label="Tabel Keranjang Belanja">
+        <thead>
+          <tr>
+            <th>Nama Produk</th>
+            <th>Harga</th>
+            <th>Jumlah</th>
+            <th>Subtotal</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Cart items will be rendered here -->
+        </tbody>
+      </table>
+      <div class="cart-total" style="margin-top: 40px; margin-bottom: 40px; padding-top: 20px; border-top: 2px solid #d2b48c; text-align: right; font-size: 1.3rem; font-weight: 700; color: #3e2f1c;">
+        <h3>Total: <span id="totalPrice">Rp 0</span></h3>
+        <a href="checkout.html" class="btn-primary" style="padding: 14px 36px; font-size: 1.1rem; border-radius: 30px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); transition: background-color 0.3s ease;">Lanjut ke Pembayaran</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer Section -->
+  <footer role="contentinfo">
+    <div class="container footer-container">
+      <p>&copy; 2024 Teddy Doll Store. Semua hak dilindungi.</p>
+            <p>Kontak: 021-12345678 | Alamat: Jl. Mawar No. 123, Jakarta, Indonesia</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Daftar - Teddy Doll</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+    <!-- Header Section -->
+    <header role="banner">
+        <div class="container header-container">
+            <h1 class="logo">Teddy Doll</h1>
+            <nav role="navigation" aria-label="Navigasi Utama">
+                <ul class="nav-links">
+                    <li><a href="index.html">Halaman Utama</a></li>
+                    <li><a href="about.html">Tentang Toko</a></li>
+                    <li><a href="shop.html">Toko</a></li>
+                    <li><a href="contact.html">Kontak</a></li>
+                    <li><a href="login.html">Masuk</a></li>
+                    <li><a href="register.html" class="active" aria-current="page">Daftar</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Register Section -->
+        <section class="container register-section" role="region" aria-label="Form Pendaftaran" style="max-width: 400px; margin: 40px auto; padding: 20px; border: 2px solid #4B2E05; border-radius: 10px; background-color: #FFF8E1; box-shadow: 0 4px 12px rgba(75, 46, 5, 0.3); color: #4B2E05;">
+            <h2 style="text-align: center; font-weight: 700; margin-bottom: 20px;">Buat Akun Baru</h2>
+            <form action="#" method="POST" class="register-form" novalidate style="display: flex; flex-direction: column; gap: 15px;">
+                <label for="name" style="font-weight: 600;">Nama Lengkap</label>
+                <input type="text" id="name" name="name" placeholder="Nama lengkap Anda" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;" />
+                
+                <label for="email" style="font-weight: 600;">Email</label>
+                <input type="email" id="email" name="email" placeholder="Alamat email Anda" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;" />
+                
+                <label for="password" style="font-weight: 600;">Kata Sandi</label>
+                <input type="password" id="password" name="password" placeholder="Kata sandi Anda" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;" />
+                
+                <label for="confirm-password" style="font-weight: 600;">Konfirmasi Kata Sandi</label>
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="Konfirmasi kata sandi" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;" />
+                
+                <div class="terms" style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="terms" name="terms" required />
+                    <label for="terms" style="margin: 0;">Saya setuju dengan <a href="syarat_ketentuan.html" style="color: #4B2E05; text-decoration: underline;">Syarat & Ketentuan</a></label>
+                </div>
+                
+                <div class="error-message" style="color: red; margin-bottom: 10px;"></div>
+                
+                <button type="submit" class="btn-primary" style="padding: 12px; background-color: #4B2E05; color: #F3E9D2; border: none; border-radius: 5px; font-weight: 700; cursor: pointer; transition: background-color 0.3s ease;">Daftar</button>
+            </form>
+            <p style="text-align: center; margin-top: 15px;">Setelah mendaftar, kunjungi <a href="shop.html" style="color: #4B2E05; text-decoration: underline;">Toko</a> kami untuk berbelanja.</p>
+            <script src="userManagement.js"></script>
+            <script>
+                const form = document.querySelector('.register-form');
+                const errorMessage = form.querySelector('.error-message');
+
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+
+                    const name = form.querySelector('#name').value.trim();
+                    const email = form.querySelector('#email').value.trim();
+                    const password = form.querySelector('#password').value;
+                    const confirmPassword = form.querySelector('#confirm-password').value;
+                    const termsChecked = form.querySelector('#terms').checked;
+
+                    errorMessage.textContent = '';
+
+                    if (!name || !email || !password || !confirmPassword) {
+                        errorMessage.textContent = 'Semua field harus diisi.';
+                        return;
+                    }
+
+                    if (password !== confirmPassword) {
+                        errorMessage.textContent = 'Kata sandi dan konfirmasi tidak cocok.';
+                        return;
+                    }
+
+                    if (!termsChecked) {
+                        errorMessage.textContent = 'Anda harus menyetujui Syarat & Ketentuan.';
+                        return;
+                    }
+
+                    // Gunakan email sebagai username untuk registerUser
+                    const result = registerUser(email, password);
+                    if (result === 'success') {
+                        alert('Pendaftaran berhasil! Silakan login.');
+                        window.location.href = 'login.html';
+                    } else if (result === 'exists') {
+                        errorMessage.textContent = 'Email sudah digunakan, silakan coba yang lain.';
+                    } else if (result === 'empty_fields') {
+                        errorMessage.textContent = 'Email dan password harus diisi.';
+                    } else {
+                        errorMessage.textContent = 'Terjadi kesalahan saat pendaftaran.';
+                    }
+                });
+            </script>
+        </section>
+    </main>
+    <!-- Footer Section -->
+    <footer role="contentinfo">
+        <div class="container footer-container">
+            <p>&copy; 2024 Teddy Doll Store. Semua hak dilindungi.</p>
+            <p>Kontak: 021-12345678 | Alamat: Jl. Mawar No. 123, Jakarta, Indonesia</p>
+        </div>
+    </footer>
+</body>
+</html>

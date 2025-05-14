@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Pembayaran - Teddy Doll</title>
+        <link rel="stylesheet" href="style.css" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
+        <style>
+            /* Style untuk ringkasan pesanan dengan warna coklat tua dan border tegas */
+            .order-summary-table {
+                width: 100%;
+                max-width: 1000px;
+                margin: 0 auto;
+                border-collapse: collapse;
+                font-family: 'Poppins', sans-serif;
+                color: #4B2E05; /* coklat tua */
+                border: 2px solid #4B2E05; /* border coklat tua tegas */
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            .order-summary-table thead tr {
+                background-color: #4B2E05; /* coklat tua */
+                color: #F3E9D2;
+            }
+            .order-summary-table th, .order-summary-table td {
+                padding: 12px 16px;
+                border: 1px solid #4B2E05; /* border coklat tua */
+            }
+            .order-summary-table th {
+                text-align: left;
+                font-weight: 600;
+            }
+            .order-summary-table td {
+                text-align: right;
+            }
+            .order-summary-table td:first-child {
+                text-align: left;
+            }
+            .order-summary-table tbody tr:last-child td {
+                border-bottom: 1px solid #4B2E05;
+            }
+            .order-summary-table tbody tr:hover {
+                background-color: #E9E1C9; /* warna latar hover */
+            }
+        </style>
+    </head>
+<body class="black-text">
+    <!-- Header Section -->
+    <header role="banner">
+        <div class="container header-container">
+            <h1 class="logo">Teddy Doll</h1>
+            <nav role="navigation" aria-label="Navigasi Utama">
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html">Halaman Utama</a></li>
+                    <li><a href="about.html">Tentang Toko</a></li>
+                    <li><a href="shop.html">Toko</a></li>
+                    <li><a href="cart.html">Keranjang</a></li>
+                    <li><a href="checkout.html" class="active" aria-current="page">Pembayaran</a></li>
+                    <li><a href="contact.html">Kontak</a></li>
+                    <li><a href="login.html">Masuk</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <script src="userManagement.js"></script>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Checkout Section -->
+        <section class="container checkout-section" role="region" aria-label="Form Pembayaran">
+            <h2 class="checkout-title">Pembayaran</h2>
+<form action="#" method="POST" class="checkout-form" style="max-width: 600px; margin: 0 auto;">
+<table class="form-table table vertical-table" style="width: 100%; border-collapse: separate; border-spacing: 0 15px; font-size: 1rem; color: #5a3e1b;">
+                    <tr>
+                        <th style="text-align: left; padding-bottom: 8px; font-weight: 700;"><label for="fullname">Nama Lengkap</label></th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0;"><input type="text" id="fullname" name="fullname" placeholder="Nama lengkap Anda" required style="width: 100%; padding: 10px 12px; border: 2px solid #d2b48c; border-radius: 8px; font-size: 1rem; color: #5a3e1b; font-family: 'Poppins', sans-serif; transition: border-color 0.3s ease;" /></td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left; padding-bottom: 8px; font-weight: 700;"><label for="address">Alamat Pengiriman</label></th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0;"><textarea id="address" name="address" rows="3" placeholder="Alamat pengiriman Anda" required style="width: 100%; padding: 10px 12px; border: 2px solid #d2b48c; border-radius: 8px; font-size: 1rem; color: #5a3e1b; font-family: 'Poppins', sans-serif; transition: border-color 0.3s ease;"></textarea></td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left; padding-bottom: 8px; font-weight: 700;"><label for="payment">Metode Pembayaran</label></th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0;">
+                            <select id="payment" name="payment" required style="width: 100%; padding: 10px 12px; border: 2px solid #d2b48c; border-radius: 8px; font-size: 1rem; color: #5a3e1b; font-family: 'Poppins', sans-serif; transition: border-color 0.3s ease;">
+                                <option value="">Pilih metode pembayaran</option>
+                                <option value="kartu_kredit">Kartu Kredit</option>
+                                <option value="paypal">PayPal</option>
+                                <option value="transfer_bank">Transfer Bank</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+
+    <section class="order-summary" aria-label="Ringkasan Pesanan" style="max-width: 1000px; margin: 30px auto 0 auto;">
+        <h3 style="color: #5a3e1b; font-weight: 700; margin-bottom: 15px;">Ringkasan Pesanan</h3>
+        <table id="orderItemsList" class="order-summary-table" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>Nama Produk</th>
+                    <th>Jumlah</th>
+                    <th>Harga Satuan</th>
+                    <th>Total Harga</th>
+                </tr>
+            </thead>
+            <tbody id="orderItemsBody">
+                <!-- Daftar produk akan dimuat di sini -->
+            </tbody>
+        </table>
+        <p style="text-align: right; font-weight: bold; margin-top: 10px; font-size: 1.2rem; color: #3e2f1c;">Total: <span id="totalPrice">Rp 0</span></p>
+    </section>
+
+                <button type="submit" class="btn-primary" style="display: block; width: 100%; max-width: 600px; margin: 20px auto 0 auto; padding: 14px 0; font-size: 1.1rem; border-radius: 30px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); cursor: pointer; transition: background-color 0.3s ease;">Bayar Sekarang</button>
+            </form>
+    <script>
+        // Cek login
+        if (!isUserLoggedIn()) {
+            alert('Silakan login terlebih dahulu untuk mengakses halaman pembayaran.');
+            window.location.href = 'login.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.getElementById('navLinks');
+
+            function renderUserLinks() {
+                const user = getLoggedInUser();
+                if (user) {
+                    navLinks.innerHTML = `
+                        <li><a href="index.html">Halaman Utama</a></li>
+                        <li><a href="about.html">Tentang Toko</a></li>
+                        <li><a href="shop.html">Toko</a></li>
+                        <li><a href="cart.html">Keranjang</a></li>
+                        <li><a href="invoice.html">Pesanan</a></li>
+                        <li><a href="checkout.html" class="active" aria-current="page">Pembayaran</a></li>
+                        <li><a href="contact.html">Kontak</a></li>
+                        <li class="nav-user">Halo, ${user.username}</li>
+                        <li><a href="#" id="logoutBtn">Logout</a></li>
+                    `;
+
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    logoutBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        logoutUser();
+                        location.href = 'login.html';
+                    });
+                } else {
+                    navLinks.innerHTML = `
+                        <li><a href="index.html">Halaman Utama</a></li>
+                        <li><a href="about.html">Tentang Toko</a></li>
+                        <li><a href="shop.html">Toko</a></li>
+                        <li><a href="cart.html">Keranjang</a></li>
+                        <li><a href="checkout.html" class="active" aria-current="page">Pembayaran</a></li>
+                        <li><a href="contact.html">Kontak</a></li>
+                        <li><a href="login.html">Masuk</a></li>
+                        <li><a href="register.html">Daftar</a></li>
+                    `;
+                }
+            }
+
+            renderUserLinks();
+
+            const orderItemsList = document.getElementById('orderItemsList');
+            const orderItemsBody = document.getElementById('orderItemsBody');
+            const totalPriceSpan = document.getElementById('totalPrice');
+
+            // Load cart from userManagement.js
+            let cart = getCartItems();
+            console.log('Cart items:', cart);
+            orderItemsBody.innerHTML = '';
+            let total = 0;
+
+            cart.forEach(item => {
+                console.log('Rendering item:', item);
+                const tr = document.createElement('tr');
+
+                const tdName = document.createElement('td');
+                tdName.style.border = '1px solid #ddd';
+                tdName.style.padding = '8px';
+                tdName.textContent = item.name;
+
+                const tdQuantity = document.createElement('td');
+                tdQuantity.style.border = '1px solid #ddd';
+                tdQuantity.style.padding = '8px';
+                tdQuantity.textContent = item.quantity || 1;
+
+                const tdPrice = document.createElement('td');
+                tdPrice.style.border = '1px solid #ddd';
+                tdPrice.style.padding = '8px';
+                tdPrice.textContent = 'Rp ' + item.price.toLocaleString('id-ID');
+
+                const tdTotal = document.createElement('td');
+                tdTotal.style.border = '1px solid #ddd';
+                tdTotal.style.padding = '8px';
+                tdTotal.textContent = 'Rp ' + ((item.price * (item.quantity || 1)).toLocaleString('id-ID'));
+
+                tr.appendChild(tdName);
+                tr.appendChild(tdQuantity);
+                tr.appendChild(tdPrice);
+                tr.appendChild(tdTotal);
+
+                orderItemsBody.appendChild(tr);
+
+                total += item.price * (item.quantity || 1);
+            });
+
+            totalPriceSpan.textContent = 'Rp ' + total.toLocaleString('id-ID');
+
+            // Handle form submission
+            const form = document.querySelector('.checkout-form');
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+
+                    if (cart.length === 0) {
+                        alert('Keranjang belanja kosong. Silakan tambahkan produk terlebih dahulu.');
+                        return;
+                    }
+
+                    const fullname = document.getElementById('fullname').value.trim();
+                    const address = document.getElementById('address').value.trim();
+                    const payment = document.getElementById('payment').value;
+
+                    if (!fullname || !address || !payment) {
+                        alert('Semua field harus diisi.');
+                        return;
+                    }
+
+                if (!checkout()) {
+                    // checkout() dari userManagement.js sudah menangani alert dan redirect jika gagal
+                    return;
+                }
+
+                const user = getLoggedInUser();
+
+                const order = {
+                    user: user.username,
+                    fullname,
+                    address,
+                    payment,
+                    items: cart.map(item => `${item.name} x ${item.quantity || 1} - Rp ${ (item.price * (item.quantity || 1)).toLocaleString('id-ID') }`),
+                    date: new Date().toISOString()
+                };
+
+                let checkedOutOrders = JSON.parse(localStorage.getItem('checkedOutOrders')) || [];
+                checkedOutOrders.push(order);
+                localStorage.setItem('checkedOutOrders', JSON.stringify(checkedOutOrders));
+
+                // alert('Terima kasih sudah berbelanja di Teddy Doll Store!'); // dihapus agar tidak duplikat alert
+                window.location.href = 'invoice.html';
+            });
+
+                // Disable tombol bayar jika keranjang kosong
+                const payButton = document.querySelector('.btn-primary');
+                if (cart.length === 0) {
+                    payButton.disabled = true;
+                    payButton.textContent = 'Keranjang Kosong';
+                }
+        });
+    </script>
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer role="contentinfo">
+        <div class="container footer-container">
+            <p>&copy; 2024 Teddy Doll Store. Semua hak dilindungi.</p>
+            <p>Kontak: 021-12345678 | Alamat: Jl. Mawar No. 123, Jakarta, Indonesia</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Invoice - Teddy Doll</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+    <!-- Header Section -->
+    <header role="banner">
+        <div class="container header-container">
+            <h1 class="logo">Teddy Doll</h1>
+            <nav role="navigation" aria-label="Navigasi Utama">
+                <ul class="nav-links">
+                    <li><a href="index.html">Halaman Utama</a></li>
+                    <li><a href="about.html">Tentang Toko</a></li>
+                    <li><a href="shop.html">Toko</a></li>
+                    <li><a href="cart.html">Keranjang</a></li>
+                    <li><a href="checkout.html">Pembayaran</a></li>
+                    <li><a href="contact.html">Kontak</a></li>
+                    <li><a href="login.html">Masuk</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <script src="userManagement.js"></script>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Invoice Section -->
+        <section class="container invoice-section" role="region" aria-label="Tanda Terima Pembelian">
+            <h2>Invoice Pembelian</h2>
+            <div id="invoiceContent">
+                <p>Memuat data invoice...</p>
+            </div>
+            <style>
+                /* Style untuk tampilan invoice yang rapi dan menarik */
+                .invoice-container {
+                    max-width: 900px;
+                    margin: 20px auto;
+                    padding: 20px;
+                    border: 2px solid #4B2E05;
+                    border-radius: 10px;
+                    background-color: #FFF8E1;
+                    font-family: 'Poppins', sans-serif;
+                    color: #4B2E05;
+                    box-shadow: 0 4px 12px rgba(75, 46, 5, 0.3);
+                }
+                .invoice-header {
+                    margin-bottom: 20px;
+                }
+                .invoice-header p {
+                    margin: 4px 0;
+                    font-weight: 600;
+                }
+                .invoice-title {
+                    font-size: 1.8rem;
+                    font-weight: 700;
+                    margin-bottom: 12px;
+                    color: #4B2E05;
+                }
+                .invoice-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: 20px;
+                }
+                .invoice-table thead tr {
+                    background-color: #4B2E05;
+                    color: #F3E9D2;
+                }
+                .invoice-table th, .invoice-table td {
+                    padding: 12px 16px;
+                    border: 1px solid #4B2E05;
+                    text-align: left;
+                }
+                .invoice-table tbody tr:hover {
+                    background-color: #E9E1C9;
+                }
+                .invoice-status {
+                    font-weight: 600;
+                    font-size: 1.1rem;
+                }
+            </style>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const invoiceContent = document.getElementById('invoiceContent');
+            const user = getLoggedInUser();
+
+            if (!user) {
+                invoiceContent.innerHTML = '<p>Anda harus login untuk melihat invoice.</p>';
+                return;
+            }
+
+            const allOrders = JSON.parse(localStorage.getItem('checkedOutOrders')) || [];
+            const userOrders = allOrders.filter(order => order.user === user.username);
+
+            if (userOrders.length === 0) {
+                invoiceContent.innerHTML = '<p>Belum ada pesanan untuk ditampilkan.</p>';
+                return;
+            }
+
+            // Ambil pesanan terakhir
+            const lastOrder = userOrders[userOrders.length - 1];
+
+            // Buat nomor invoice unik berdasarkan tanggal dan waktu
+            const invoiceNumber = 'INV-' + new Date(lastOrder.date).toISOString().replace(/[-:.TZ]/g, '') + '-' + Math.floor(Math.random() * 10000);
+
+            // Buat elemen HTML untuk invoice
+            let html = `
+                <div class="invoice-container">
+                    <p><strong>Nomor Invoice:</strong> ${invoiceNumber}</p>
+                    <p><strong>Tanggal & Waktu Pembelian:</strong> ${new Date(lastOrder.date).toLocaleString('id-ID')}</p>
+
+                    <h3>Detail Pembelian</h3>
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th>Produk</th>
+                                <th>Jumlah</th>
+                                <th>Harga</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            let grandTotal = 0;
+            lastOrder.items.forEach(itemText => {
+                // itemText format: "Boneka Teddy Klasik x 1 - Rp 250.000"
+                // Parse item name, quantity, and price
+                const match = itemText.match(/(.+) x (\d+) - Rp ([\d.]+)/);
+                if (match) {
+                    const name = match[1];
+                    const quantity = parseInt(match[2]);
+                    const price = parseInt(match[3].replace(/\./g, ''));
+                    const totalPrice = price * quantity;
+                    grandTotal += totalPrice;
+                    html += `
+                        <tr>
+                            <td>${name}</td>
+                            <td>${quantity}</td>
+                            <td>Rp ${price.toLocaleString('id-ID')}</td>
+                            <td>Rp ${totalPrice.toLocaleString('id-ID')}</td>
+                        </tr>
+                    `;
+                } else {
+                    html += `
+                        <tr>
+                            <td colspan="4">${itemText}</td>
+                        </tr>
+                    `;
+                }
+            });
+
+            html += `
+                        <tr>
+                            <td colspan="3" style="text-align: right; font-weight: 700;">Total Harga</td>
+                            <td style="font-weight: 700;">Rp ${grandTotal.toLocaleString('id-ID')}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <p class="invoice-status"><strong>Status Pengiriman:</strong> Sedang Diproses</p>
+                </div>
+            `;
+
+            invoiceContent.innerHTML = html;
+        });
+    </script>
+
+    <!-- Footer Section -->
+    <footer role="contentinfo">
+        <div class="container footer-container">
+            <p>&copy; 2024 Teddy Doll Store. Semua hak dilindungi.</p>
+            <p>Kontak: 021-12345678 | Alamat: Jl. Mawar No. 123, Jakarta, Indonesia</p>
+        </div>
+    </footer>
+</body>
+</html>

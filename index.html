@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Teddy Doll - Halaman Utama</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="tables-style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+    <!-- Header Section -->
+    <header role="banner">
+        <div class="container header-container">
+            <h1 class="logo">Teddy Doll</h1>
+            <nav role="navigation" aria-label="Navigasi Utama">
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html" class="active" aria-current="page">Halaman Utama</a></li>
+                    <li><a href="about.html">Tentang Kami</a></li>
+                    <li><a href="shop.html">Toko</a></li>
+                    <li><a href="contact.html">Kontak</a></li>
+                    <li><a href="login.html">Masuk</a></li>
+                </ul>
+            </nav>
+            <script type="module">
+                import { getLoggedInUser, logoutUser } from './auth.js';
+
+                document.addEventListener('DOMContentLoaded', () => {
+                    const navLinks = document.getElementById('navLinks');
+
+                    function renderUserLinks() {
+                        const user = getLoggedInUser();
+                    if (user) {
+                        navLinks.innerHTML = `
+                            <li><a href="index.html" class="active" aria-current="page">Halaman Utama</a></li>
+                            <li><a href="about.html">Tentang Kami</a></li>
+                            <li><a href="shop.html">Toko</a></li>
+                            <li><a href="cart.html">Keranjang</a></li>
+                            <li><a href="invoice.html">Pesanan</a></li>
+                            <li><a href="syarat_ketentuan.html">Syarat dan Ketentuan</a></li>
+                            <li><a href="contact.html">Kontak</a></li>
+                            <li class="nav-user">Halo, ${user}</li>
+                            <li><a href="#" id="logoutBtn">Logout</a></li>
+                        `;
+
+                            const logoutBtn = document.getElementById('logoutBtn');
+                            logoutBtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                logoutUser();
+                                location.reload();
+                            });
+
+                            const ordersToggle = document.getElementById('ordersToggle');
+                            const ordersDropdown = document.getElementById('ordersDropdown');
+
+                            ordersToggle.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                if (ordersDropdown.style.display === 'none') {
+                                    ordersDropdown.style.display = 'block';
+                                } else {
+                                    ordersDropdown.style.display = 'none';
+                                }
+                            });
+
+                            const allOrders = JSON.parse(localStorage.getItem('checkedOutOrders')) || [];
+                            const userOrders = allOrders.filter(order => order.user === user);
+
+                            ordersDropdown.innerHTML = '';
+
+                            if (userOrders.length === 0) {
+                                const li = document.createElement('li');
+                                li.textContent = 'Belum ada pesanan';
+                                ordersDropdown.appendChild(li);
+                            } else {
+                                userOrders.forEach((order, index) => {
+                                    const li = document.createElement('li');
+                                    li.innerHTML = `<strong>Pesanan ${index + 1} - ${new Date(order.date).toLocaleString('id-ID')}</strong><br/>` +
+                                        order.items.map(item => `<span>${item}</span>`).join('<br/>');
+                                    ordersDropdown.appendChild(li);
+                                });
+                            }
+                        } else {
+                            navLinks.innerHTML = `
+                                <li><a href="index.html" class="active" aria-current="page">Halaman Utama</a></li>
+                                <li><a href="about.html">Tentang Kami</a></li>
+                                <li><a href="shop.html">Toko</a></li>
+                                <li><a href="contact.html">Kontak</a></li>
+                                <li><a href="login.html">Masuk</a></li>
+                                <li><a href="register.html">Daftar</a></li>
+                            `;
+                        }
+                    }
+
+                    renderUserLinks();
+                });
+            </script>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container main-content-flex">
+        <section class="hero" role="region" aria-label="Bagian Selamat Datang">
+            <div class="welcome-box">
+                <h2>Selamat Datang di Teddy Doll Store</h2>
+                <p>Temukan boneka teddy yang paling lucu dan lembut untuk orang tercinta Anda.</p>
+                <a href="shop.html" class="btn-primary">Belanja Sekarang</a>
+                <a href="register.html" class="btn-secondary">Daftar Akun</a>
+            </div>
+        </section>
+        </div>
+
+        <!-- Featured Products -->
+        <section class="featured-products container" role="region" aria-label="Produk Unggulan">
+            <h2>Produk Unggulan</h2>
+            <div class="product-grid">
+                <article class="product-card">
+                    <img src="images/teddy_klasik.png" alt="Boneka Teddy Klasik" />
+                    <h3>Boneka Teddy Klasik</h3>
+                    <p class="price">Rp 250.000</p>
+                    <a href="shop.html" class="btn-primary">Beli Sekarang</a>
+                </article>
+                <article class="product-card">
+                    <img src="images/teddy_pink.png" alt="Boneka Teddy Pink" />
+                    <h3>Boneka Teddy Pink</h3>
+                    <p class="price">Rp 300.000</p>
+                    <a href="shop.html" class="btn-primary">Beli Sekarang</a>
+                </article>
+                <article class="product-card">
+                    <img src="images/teddy_raksasa.png" alt="Boneka Teddy Raksasa" />
+                    <h3>Boneka Teddy Raksasa</h3>
+                    <p class="price">Rp 500.000</p>
+                    <a href="shop.html" class="btn-primary">Beli Sekarang</a>
+                </article>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <center>
+        <section class="testimonials container" role="region" aria-label="Testimoni Pelanggan">
+            <h2>Testimoni Pelanggan</h2>
+            <div class="testimonial">
+                <div class="user-icon">👤</div>
+                <blockquote>
+                    "Boneka teddy yang saya beli sangat lucu dan berkualitas tinggi. Pelayanan juga sangat memuaskan!"
+                </blockquote>
+                <p class="customer-name">- Ani, Jakarta</p>
+            </div>
+            <div class="testimonial">
+                <div class="user-icon">👤</div>
+                <blockquote>
+                    "Pengiriman cepat dan boneka sampai dalam kondisi sempurna. Sangat direkomendasikan!"
+                </blockquote>
+                <p class="customer-name">- Budi, Bandung</p>
+            </div>
+            <div class="testimonial">
+                <div class="user-icon">👤</div>
+                <blockquote>
+                    "Harga terjangkau dan produk sesuai dengan deskripsi. Saya pasti akan beli lagi."
+                </blockquote>
+                <p class="customer-name">- Clara, Surabaya</p>
+            </div>
+        </section>
+        </center>
+    </main>
+
+    <!-- Footer Section -->
+    <footer role="contentinfo" style="background: url('images/footer_bg.png') no-repeat center center/cover;">
+        <div class="container footer-container">
+            <p>&copy; 2024 Teddy Doll Store. Semua hak dilindungi.</p>
+            <p>Kontak: 021-12345678 | Alamat: Jl. Mawar No. 123, Jakarta, Indonesia</p>
+        </div>
+    </footer>
+</body>
+</html>

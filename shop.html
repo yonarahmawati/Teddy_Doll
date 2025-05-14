@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Toko - Teddy Doll</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
+    <script>
+        // Fungsi untuk memfilter produk berdasarkan input pencarian
+        function filterProducts() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const products = document.getElementsByClassName('product-card');
+            for (let product of products) {
+                const title = product.getElementsByTagName('h3')[0].innerText.toLowerCase();
+                const description = product.getElementsByClassName('description')[0].innerText.toLowerCase();
+                if (title.includes(input) || description.includes(input)) {
+                    product.style.display = '';
+                } else {
+                    product.style.display = 'none';
+                }
+            }
+        }
+    </script>
+</head>
+<body class="black-text">
+    <!-- Header Section -->
+    <header role="banner">
+        <div class="container header-container">
+            <h1 class="logo">Teddy Doll</h1>
+            <nav role="navigation" aria-label="Navigasi Utama" class="main-nav">
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html">Halaman Utama</a></li>
+                    <li><a href="about.html">Tentang Toko</a></li>
+                    <li><a href="shop.html" class="active" aria-current="page">Toko</a></li>
+                    <li><a href="cart.html">Keranjang</a></li>
+                    <li><a href="invoice.html">Pesanan</a></li>
+                    <li><a href="contact.html">Kontak</a></li>
+                </ul>
+                <div class="nav-user-container" id="navUserContainer">
+                    <!-- User account info will be rendered here -->
+                </div>
+            </nav>
+            <script src="userManagement.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const navLinks = document.getElementById('navLinks');
+                    const navUserContainer = document.getElementById('navUserContainer');
+
+                    function renderUserLinks() {
+                        const user = getLoggedInUser();
+                        if (user) {
+                            navLinks.innerHTML = `
+                                <li><a href="index.html">Halaman Utama</a></li>
+                                <li><a href="about.html">Tentang Toko</a></li>
+                                <li><a href="shop.html" class="active" aria-current="page">Toko</a></li>
+                                <li><a href="cart.html">Keranjang</a></li>
+                                <li><a href="invoice.html">Pesanan</a></li>
+                                <li><a href="contact.html">Kontak</a></li>
+                            `;
+
+                            navUserContainer.innerHTML = `
+                                <span class="nav-user">Halo, ${user.username}</span>
+                                <a href="#" id="logoutBtn" class="nav-logout">Logout</a>
+                                <div class="nav-orders-container">
+                                    <ul id="ordersDropdown" class="orders-dropdown" style="display:none;">
+                                        <!-- Daftar pesanan akan dimuat di sini -->
+                                    </ul>
+                                </div>
+                            `;
+
+                            const logoutBtn = document.getElementById('logoutBtn');
+                            logoutBtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                logoutUser();
+                                location.href = 'login.html';
+                            });
+
+                            // User dropdown toggle
+                            const dropbtn = document.querySelector('.user-dropdown .dropbtn');
+                            const userDropdown = document.getElementById('userDropdown');
+
+                            dropbtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                if (userDropdown.style.display === 'block') {
+                                    userDropdown.style.display = 'none';
+                                } else {
+                                    userDropdown.style.display = 'block';
+                                }
+                            });
+
+                            // Orders dropdown toggle
+                            const ordersToggle = document.getElementById('ordersToggle');
+                            const ordersDropdown = document.getElementById('ordersDropdown');
+
+                            ordersToggle.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                if (ordersDropdown.style.display === 'none') {
+                                    ordersDropdown.style.display = 'block';
+                                } else {
+                                    ordersDropdown.style.display = 'none';
+                                }
+                            });
+
+                            const allOrders = JSON.parse(localStorage.getItem('checkedOutOrders')) || [];
+                            const userOrders = allOrders.filter(order => order.user === user.username);
+
+                            ordersDropdown.innerHTML = '';
+
+                            if (userOrders.length === 0) {
+                                const noOrdersRow = document.createElement('tr');
+                                const noOrdersCell = document.createElement('td');
+                                noOrdersCell.colSpan = 3;
+                                noOrdersCell.textContent = 'Belum ada pesanan';
+                                noOrdersRow.appendChild(noOrdersCell);
+                                ordersDropdown.appendChild(noOrdersRow);
+                            } else {
+                                // Create table header
+                                const headerRow = document.createElement('tr');
+                                const thNo = document.createElement('th');
+                                thNo.textContent = 'No';
+                                const thDate = document.createElement('th');
+                                thDate.textContent = 'Tanggal';
+                                const thItems = document.createElement('th');
+                                thItems.textContent = 'Item';
+                                headerRow.appendChild(thNo);
+                                headerRow.appendChild(thDate);
+                                headerRow.appendChild(thItems);
+                                ordersDropdown.appendChild(headerRow);
+
+                                userOrders.forEach((order, index) => {
+                                    const row = document.createElement('tr');
+
+                                    const cellNo = document.createElement('td');
+                                    cellNo.textContent = index + 1;
+                                    row.appendChild(cellNo);
+
+                                    const cellDate = document.createElement('td');
+                                    cellDate.textContent = new Date(order.date).toLocaleString('id-ID');
+                                    row.appendChild(cellDate);
+
+                                    const cellItems = document.createElement('td');
+                                    const ul = document.createElement('ul');
+                                    ul.style.paddingLeft = '20px';
+                                    order.items.forEach(item => {
+                                        const li = document.createElement('li');
+                                        li.textContent = item;
+                                        ul.appendChild(li);
+                                    });
+                                    cellItems.appendChild(ul);
+                                    row.appendChild(cellItems);
+
+                                    ordersDropdown.appendChild(row);
+                                });
+                            }
+                        }
+                    }
+
+                    renderUserLinks();
+                });
+            </script>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Shop Section -->
+        <section class="container shop-section" role="region" aria-label="Produk Teddy Doll">
+            <h2 style="font-size: 2.5rem; font-weight: 700; color: #5a3e1b; text-align: center; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;">Produk Teddy Doll Kami</h2>
+
+            <!-- Product Filters -->
+            <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; gap: 8px;">
+                <label for="searchInput" style="font-weight: 600; font-size: 1.2rem; color: #5a3e1b;">Cari Produk:</label>
+                <input type="search" id="searchInput" onkeyup="filterProducts()" placeholder="Ketik nama atau deskripsi produk..." aria-describedby="searchHelp" style="width: 100%; max-width: 400px; padding: 10px 14px; border: 2px solid #d2b48c; border-radius: 8px; font-size: 1rem; color: #5a3e1b; transition: border-color 0.3s ease;" />
+                <small id="searchHelp" style="font-size: 0.85rem; color: #6b4f2a; font-style: italic;">Ketik nama atau deskripsi produk untuk mencari.</small>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="product-grid">
+                <article class="product-card">
+                    <img src="images/teddy_klasik.png" alt="Boneka Teddy Klasik" />
+                    <h3>Boneka Teddy Klasik</h3>
+                    <p class="description">Desain tradisional yang khas dan lembut.</p>
+                    <p class="price">Rp 250.000</p>
+                    <button class="btn-primary">Tambah ke Keranjang</button>
+                </article>
+                <article class="product-card">
+                    <img src="images/teddy_raksasa.png" alt="Boneka Teddy Raksasa" />
+                    <h3>Boneka Teddy Raksasa</h3>
+                    <p class="description">Ukuran besar, cocok untuk dipeluk.</p>
+                    <p class="price">Rp 500.000</p>
+                    <button class="btn-primary">Tambah ke Keranjang</button>
+                </article>
+                <article class="product-card">
+                    <img src="images/teddy_mini.png" alt="Boneka Teddy Mini" />
+                    <h3>Boneka Teddy Mini</h3>
+                    <p class="description">Boneka kecil yang sering jadi hadiah atau gantungan kunci.</p>
+                    <p class="price">Rp 150.000</p>
+                    <button class="btn-primary">Tambah ke Keranjang</button>
+                </article>
+                <article class="product-card">
+                    <img src="images/teddy_bayi.png" alt="Boneka Teddy Bayi" />
+                    <h3>Boneka Teddy Bayi</h3>
+                    <p class="description">Desain lucu dan aman untuk bayi.</p>
+                    <p class="price">Rp 200.000</p>
+                    <button class="btn-primary">Tambah ke Keranjang</button>
+                </article>
+                <article class="product-card">
+                    <img src="images/teddy_halus.png" alt="Boneka Teddy Halus" />
+                    <h3>Boneka Teddy Halus</h3>
+                    <p class="description">Berbulu sangat lembut dan nyaman disentuh.</p>
+                    <p class="price">Rp 220.000</p>
+                    <button class="btn-primary">Tambah ke Keranjang</button>
+                </article>
+                <article class="product-card">
+                    <img src="images/teddy_coklat.png" alt="Boneka Teddy Coklat" />
+                    <h3>Boneka Teddy Coklat</h3>
+                    <p class="description">Warna khas boneka Teddy klasik.</p>
+                    <p class="price">Rp 270.000</p>
+                    <button class="btn-primary">Tambah ke Keranjang</button>
+                </article>
+                <article class="product-card">
+                    <img src="images/teddy_pink.png" alt="Boneka Teddy Pink" />
+                    <h3>Boneka Teddy Pink</h3>
+                    <p class="description">Boneka berwarna merah muda yang romantis.</p>
+                    <p class="price">Rp 300.000</p>
+                    <button class="btn-primary">Tambah ke Keranjang</button>
+                </article>
+                <article class="product-card">
+                    <img src="images/teddy_putih.png" alt="Boneka Teddy Putih" />
+                    <h3>Boneka Teddy Putih</h3>
+                    <p class="description">Boneka dengan warna putih yang elegan dan manis.</p>
+                    <p class="price">Rp 280.000</p>
+                    <button class="btn-primary">Tambah ke Keranjang</button>
+                </article>
+                <article class="product-card">
+                    <img src="images/teddy_antik.png" alt="Boneka Teddy Antik" />
+                    <h3>Boneka Teddy Antik</h3>
+                    <p class="description">Desain retro dengan tampilan klasik.</p>
+                    <p class="price">Rp 350.000</p>
+                    <button class="btn-primary">Tambah ke Keranjang</button>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Ganti fungsi getLoggedInUser untuk menggunakan userManagement.js
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!isUserLoggedIn()) {
+                alert('Silakan login terlebih dahulu untuk mengakses toko.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const buttons = document.querySelectorAll('.product-card .btn-primary');
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    if (!isUserLoggedIn()) {
+                        alert('Silakan login terlebih dahulu untuk menambahkan barang ke keranjang.');
+                        return;
+                    }
+
+                    const productCard = button.closest('.product-card');
+                    const name = productCard.querySelector('h3').innerText;
+                    const priceText = productCard.querySelector('.price').innerText;
+                    const price = parseInt(priceText.replace(/[^\d]/g, ''));
+
+                    const item = { name, price };
+
+                    if (addToCart(item)) {
+                        alert(`${name} berhasil ditambahkan ke keranjang.`);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!-- Footer Section -->
+    <footer role="contentinfo">
+        <div class="container footer-container">
+            <p>&copy; 2024 Teddy Doll Store. Semua hak dilindungi.</p>
+            <p>Kontak: 021-12345678 | Alamat: Jl. Mawar No. 123, Jakarta, Indonesia</p>
+        </div>
+    </footer>
+</body>
+</html>
